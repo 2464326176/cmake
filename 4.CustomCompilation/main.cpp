@@ -7,8 +7,12 @@
 #endif
 
 int main() {
-
-    std::cout << "5 + 9 = " << pow(5, 9) << std::endl;
+    #ifdef use_mymath
+    std::cout << "2 ^ 2 = " << mypow(2, 2) << std::endl;
+    #else 
+    std::cout << "2 ^ 2 = " << pow(2, 2) << std::endl;
+    #endif
+    
 
     return 0;
 }

@@ -1,5 +1,5 @@
 #include <iostream>
-#include "add.h"
+#include "MyMath.h"
 
 int main() {
 
