@@ -1,17 +1,25 @@
-# cmake
 # cmake总结 
     官网地址：https://cmake.org/
-# 常用的简单的命令解析
-##### 指定cmake最小版本
-* cmake_minimum_required(VERSION 3.16.3)  
-##### 设置项目名称
+# 一、常用的简单的命令解析
+
+## 指定cmake最小版本
+
+- cmake_minimum_required(VERSION 3.16.3)  
+
+## 设置项目名称
+
 * project(MyProject)  
-##### 生成可执行文件
+
+## 生成可执行文件
+
 * add_executable(main main.cpp) 
-##### # 生成静态库
+
+## 生成静态库
+
 * add_library(common STATIC test.cpp) 
 
-##### 生成动态库或共享库
+## 生成动态库或共享库
+
 * add_library(common SHARED test.cpp)
 1. linux 
 
@@ -21,59 +29,78 @@
 
         test.lib        静态库
         test.dll        动态库
-##### 明确指定包含的源文件
+
+## 明确指定包含的源文件
+
 * add_library(demo demo.cpp test.cpp util.cpp)
-##### 搜素所有的cpp文件
+
+## 搜素所有的cpp文件
+
 * aux_source_directory(. SRC_LIST) # 搜索当前目录下的所有.cpp文件
 * add_library(demo ${SRC_LIST})
-自定义搜索规则
-file(GLOB SRC_LIST "*.cpp" "protocol/*.cpp")
-add_library(demo ${SRC_LIST})
-# 或者
-file(GLOB SRC_LIST "*.cpp")
-file(GLOB SRC_PROTOCOL_LIST "protocol/*.cpp")
-add_library(demo ${SRC_LIST} ${SRC_PROTOCOL_LIST})
-# 或者
-aux_source_directory(. SRC_LIST)
-aux_source_directory(protocol SRC_PROTOCOL_LIST)
-add_library(demo ${SRC_LIST} ${SRC_PROTOCOL_LIST})
 
+## 自定义搜索规则
 
-5. 查找指定的库文件
+- file(GLOB SRC_LIST "*.cpp" "protocol/*.cpp")
+
+- add_library(demo ${SRC_LIST})
+
+  ##### 或者
+
+- file(GLOB SRC_LIST "*.cpp")*
+
+- file(GLOB SRC_PROTOCOL_LIST "protocol/*\.cpp")
+
+- add_library(demo ${SRC_LIST} ${SRC_PROTOCOL_LIST})
+
+  ##### 或者
+
+- aux_source_directory(. SRC_LIST)
+
+- aux_source_directory(protocol SRC_PROTOCOL_LIST)
+
+- add_library(demo ${SRC_LIST} ${SRC_PROTOCOL_LIST})
+
+## 查找指定的库文件
+
 find_library(VAR name path)查找到指定的预编译库，并将它的路径存储在变量中。
 默认的搜索路径为 cmake 包含的系统库，因此如果是 NDK 的公共库只需要指定库的 name 即可。
 
 find_library( # Sets the name of the path variable.
               log-lib
- 
+
               # Specifies the name of the NDK library that
               # you want CMake to locate.
               log )
 类似的命令还有 find_file()、find_path()、find_program()、find_package()。
 
-6. 设置包含的目录
+设置包含的目录
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+ ${CMAKE_CURRENT_SOURCE_DIR}
+ ${CMAKE_CURRENT_BINARY_DIR}
+ ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 Linux 下还可以通过如下方式设置包含的目录
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${CMAKE_CURRENT_SOURCE_DIR}")
-7. 设置链接库搜索目录
+
+设置链接库搜索目录
 link_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs
+ ${CMAKE_CURRENT_SOURCE_DIR}/libs
 )
 Linux 下还可以通过如下方式设置包含的目录
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -L${CMAKE_CURRENT_SOURCE_DIR}/libs")
-8. 设置 target 需要链接的库
+
+设置 target 需要链接的库
 target_link_libraries( # 目标库
-                       demo
- 
-                       # 目标库需要链接的库
-                       # log-lib 是上面 find_library 指定的变量名
-                       ${log-lib} )
+                    demo
+
+```
+                # 目标库需要链接的库
+                # log-lib 是上面 find_library 指定的变量名
+                ${log-lib} )
+```
 在 Windows 下，系统会根据链接库目录，搜索xxx.lib 文件，Linux 下会搜索 xxx.so 或者 xxx.a 文件，如果都存在会优先链接动态库（so 后缀）。
 
 8.1 指定链接动态库或静态库
@@ -91,7 +118,8 @@ target_link_libraries(demo
     boost_system.a
     boost_thread
     pthread)
-9. 设置变量
+
+设置变量
 9.1 set 直接设置变量的值
 
 set(SRC_LIST main.cpp test.cpp)
@@ -155,7 +183,7 @@ else()
     -D_WIN32_WINNT=0x601
     -D_WINSOCK_DEPRECATED_NO_WARNINGS)
 endif()
- 
+
 if(${CMAKE_BUILD_TYPE} MATCHES "debug")
     ...
 else()
@@ -176,17 +204,20 @@ start 表示起始数，stop 表示终止数，step 表示步长，示例：
 foreach(i RANGE 1 9 2)
     message(${i})
 endforeach(i)
-# 输出：13579
-11. 打印信息
+
+
+
+打印信息
 message(${PROJECT_SOURCE_DIR})
 message("build with debug mode")
 message(WARNING "this is warnning message")
 message(FATAL_ERROR "this build has many error") # FATAL_ERROR 会导致编译失败
-12. 包含其它 cmake 文件
+
+包含其它 cmake 文件
 include(./common.cmake) # 指定包含文件的全路径
 include(def) # 在搜索路径中搜索def.cmake文件
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake) # 设置include的搜索路径
- 
+
 
 三、常用变量
 1. 预定义变量
@@ -225,17 +256,6 @@ CMAKE_C_FLAGS：设置 C 编译选项，也可以通过指令 add_definitions() 
 CMAKE_CXX_FLAGS：设置 C++ 编译选项，也可以通过指令 add_definitions() 添加
 
 add_definitions(-DENABLE_DEBUG -DABC) # 参数之间用空格分隔
-————————————————
-版权声明：本文为CSDN博主「阿飞__」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
-原文链接：https://blog.csdn.net/afei__/article/details/81201039
-
-
-
-##### 
-##### 
-##### 
-##### 
-##### 
 
 --------------------------------------------------------------------
 # 目录结构：
